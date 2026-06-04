@@ -1,0 +1,82 @@
+﻿<Window x:Class="WpfAddTags.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfAddTags"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="5">
+        <Button Content="Выбрать excel файл" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ButtonGeneralFile_Click" Margin="5"/>
+            <TextBlock Text="" x:Name="LabelGeneralFile" HorizontalAlignment="Left" VerticalAlignment="Top" Height="59" Width="274" TextWrapping="Wrap" Margin="5"/>
+            <CheckBox Content="Загружена только нужная зона" HorizontalAlignment="Left"  VerticalAlignment="Top" Name="rightData" Margin="5"/>
+            <Button Content="Выбрать KepToTable файл" HorizontalAlignment="Left"  VerticalAlignment="Top" Click="ButtonKepToTableFile_Click" Margin="5">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ElementName=rightData, Path=IsChecked}" Value="True">
+                            <Setter Property="IsEnabled" Value="True" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+            <TextBlock Text="" x:Name="LabelKepToTableFile" HorizontalAlignment="Left" VerticalAlignment="Top" Height="47" Width="274" TextWrapping="Wrap" Margin="5"/>
+            <Button Content="Сравнить файлы" HorizontalAlignment="Left" VerticalAlignment="Top" Click="ButtonCompareFiles_Click" Margin="5"/>
+            <Button Content="Проверить файл на дубликаты" HorizontalAlignment="Left" Margin="5,110,0,0" VerticalAlignment="Top" Click="ButtonCheckDuble_Click"/>
+            <TextBlock Text="Идет проверка" x:Name="Cheking" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" Visibility="Hidden"/>
+        </StackPanel>
+        
+
+        <ListBox x:Name="lstTags" Margin="5" SelectionMode="Multiple" Grid.Column="1">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Margin" Value="5"/>
+                    <Setter Property="Padding" Value="5"/>
+                    <Setter Property="Background" Value="LightSteelBlue"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border x:Name="brd" Background="{TemplateBinding Background}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                    <CheckBox Focusable="False" Margin="{TemplateBinding Padding}" Foreground="{TemplateBinding Foreground}"
+                                                 IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}">
+                                        <ContentPresenter/>
+                                    </CheckBox>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#FF195A2F"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="BorderBrush" Value="Black"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+        <StackPanel Grid.Column="2">
+        <StackPanel  Orientation="Horizontal">
+            <TextBlock  HorizontalAlignment="Left" Margin="5" Text="Новых тегов: " VerticalAlignment="Top"/>
+            <TextBlock  HorizontalAlignment="Left" Margin="5" Text="" VerticalAlignment="Top"  Name="newTagsCount"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock  HorizontalAlignment="Left" Margin="5" Text="Выбрано тегов: " VerticalAlignment="Top"/>
+            <TextBlock  HorizontalAlignment="Left" Margin="5" Text="" VerticalAlignment="Top"  Name="selectTagsCount"/>
+        </StackPanel>
+        <Button Content="Выбрать все / убрать выделения" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Click="ButtonSelectAll_Click"/>
+        <Button Content="Сохранить" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Click="ButtonSave_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
