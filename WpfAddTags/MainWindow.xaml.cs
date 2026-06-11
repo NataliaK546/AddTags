@@ -97,20 +97,22 @@ namespace WpfAddTags
                 bool haveItemDuble = false;
                 bool haveNameDuble = false;
                 bool haveNumTagDuble = false;
+                bool wronglettercount = false;
+                StringBuilder errors = new StringBuilder();
                 foreach (var taginfo in checklist)
                 {
                     var chekItemDuble = checklist.Where(i => i.Item == taginfo.Item);
                     if (chekItemDuble.Count() > 1)
                     {
                         haveItemDuble = chekItemDuble != null;
-                        WriteTxt("Item: "+taginfo.Item);
+                        errors.AppendLine("Item: " + taginfo.Item);
                     }
 
                     var chekNameDuble = checklist.Where(i => i.Name == taginfo.Name);
                     if (chekNameDuble.Count() > 1)
                     {
                         haveNameDuble = chekNameDuble != null;
-                        WriteTxt("Name: " + taginfo.Name);
+                        errors.AppendLine("Name: " + taginfo.Item);
 
                     }
 
@@ -118,15 +120,30 @@ namespace WpfAddTags
                     if (chekNumTagDuble.Count() > 1)
                     {
                         haveNumTagDuble = chekNumTagDuble != null;
-                        WriteTxt("NumTag: " + taginfo.NumTag);
+                        errors.AppendLine("NumTag: " + taginfo.Item);
                     }
 
+                    if (taginfo.Item.Count() >= 100)
+                    {
+                        wronglettercount = true;
+                        errors.AppendLine("Item >=100: " + taginfo.Item);
+                    }
+                    if (taginfo.Group.Count() >= 30)
+                    {
+                        wronglettercount = true;
+                        errors.AppendLine("Group >=30: " + taginfo.Item);
+                    }
                 }
                 if (haveItemDuble) MessageBox.Show("Повторяются значения в первом столбце");
                 if (haveNameDuble) MessageBox.Show("Повторяются значения во втором столбце");
                 if (haveNumTagDuble) MessageBox.Show("Неправильная нумерация");
+                if (wronglettercount) MessageBox.Show("Некоторые значения столбцов слишком длинные");
 
-                if (haveItemDuble && haveNameDuble && haveNumTagDuble) Process.Start(Directory.GetCurrentDirectory()+"\\log.txt");
+                if (haveItemDuble || haveNameDuble || haveNumTagDuble || wronglettercount)
+                {
+                    WriteTxt(errors.ToString());
+                    Process.Start(Directory.GetCurrentDirectory() + "\\log.txt");
+                }
                 else MessageBox.Show("Все в порядке");
             }
             Cheking.Visibility = Visibility.Collapsed;
@@ -189,11 +206,18 @@ namespace WpfAddTags
             Excel.Worksheet xlSht = xlWb.Sheets[1]; //первый лист в файле
             int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;  //последняя заполненная строка в столбце А
             var lastnum = GeneralTagsList.Last().NumTag;
+            StringBuilder errors = new StringBuilder();
+            bool wronglettercount = false;
             for (int i = 0; i < tags.Count; i++)
             {
                 var tag=(TagInfo)tags[i];
                 iLastRow++;
                 xlSht.Cells[iLastRow, "A"].Value = tag.Item;
+                if (tag.Item.Count() >= 100)
+                {
+                    wronglettercount = true;
+                    errors.AppendLine("Item >=100: " + tag.Item);
+                }
                 xlSht.Cells[iLastRow, "B"].Value = tag.Name;
                 xlSht.Cells[iLastRow, "C"].Value = tag.Type;
                 xlSht.Cells[iLastRow, "D"].Value = tag.TypeRW;
@@ -206,6 +230,11 @@ namespace WpfAddTags
                 xlSht.Cells[iLastRow, "K"].Value = tag.Color;
                 xlSht.Cells[iLastRow, "L"].Value = tag.Init;
                 xlSht.Cells[iLastRow, "M"].Value = tag.Group;
+                if (tag.Group.Count() >= 30)
+                {
+                    wronglettercount = true;
+                    errors.AppendLine("Group >=30: " + tag.Group);
+                }
                 xlSht.Cells[iLastRow, "N"].Value = tag.ChangeVal;
                 xlSht.Cells[iLastRow, "O"].Value = tag.SaveByTime;
                 xlSht.Cells[iLastRow, "P"].Value = tag.RarelyChanging;
@@ -230,7 +259,12 @@ namespace WpfAddTags
             xlApp.Quit();
             var sum = GeneralTagsList.Count + tags.Count;
             if (sum != lastnum) MessageBox.Show("Проверьте конечный файл, возможна ошибка: неправильная нумерация");
-
+            if (wronglettercount)
+            {
+                WriteTxt(errors.ToString());
+                MessageBox.Show("Некоторые значения столбцов слишком длинные");
+                Process.Start(Directory.GetCurrentDirectory() + "\\log.txt");
+            }
         }
 
         void WriteTxt(string info)
