@@ -188,8 +188,7 @@ namespace WpfAddTags
             Excel.Workbook xlWb = xlApp.Workbooks.Open(fileName); //открываем Excel файл
             Excel.Worksheet xlSht = xlWb.Sheets[1]; //первый лист в файле
             int iLastRow = xlSht.Cells[xlSht.Rows.Count, "A"].End[Excel.XlDirection.xlUp].Row;  //последняя заполненная строка в столбце А
-            var lastnumtag = GeneralTagsList.Last().NumTag;
-            var parse = Int32.TryParse(lastnumtag, out var lastnum);
+            var lastnum = GeneralTagsList.Last().NumTag;
             for (int i = 0; i < tags.Count; i++)
             {
                 var tag=(TagInfo)tags[i];
